@@ -1,9 +1,9 @@
 import unittest
-
 from htmlnode import HTMLNode
 
 
 class TestHTMLNode(unittest.TestCase):
+
     def test_props_to_html(self):
         node = HTMLNode(
             None,
@@ -49,6 +49,41 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode(None, None, None, None)
         result = node.props_to_html()
         self.assertEqual(result, "")
+
+    # Test when props contains an empty dictionary (edge case)
+    def test_props_to_html_empty_dict(self):
+        node = HTMLNode(None, None, None, {})
+        result = node.props_to_html()
+        self.assertEqual(result, "")
+
+    # Test when props contains an empty string as a value
+    def test_props_to_html_empty_string_value(self):
+        node = HTMLNode(None, None, None, {"href": ""})
+        result = node.props_to_html()
+        self.assertEqual(result, ' href=""')
+
+    # Test when props contains numeric values as strings
+    def test_props_to_html_numeric_value(self):
+        node = HTMLNode(None, None, None, {"value": "123"})
+        result = node.props_to_html()
+        self.assertEqual(result, ' value="123"')
+
+    # Test when props contains boolean attributes (e.g., checked, disabled)
+    def test_props_to_html_boolean_attributes(self):
+        node = HTMLNode(None, None, None, {"checked": "true", "disabled": "false"})
+        result = node.props_to_html()
+        self.assertEqual(result, ' checked="true" disabled="false"')
+
+    # Test props with special characters (quotes, spaces, etc.)
+    def test_props_to_html_special_characters(self):
+        node = HTMLNode(
+            None, None, None, {"title": 'An "example" title', "class": "special class"}
+        )
+        result = node.props_to_html()
+        self.assertEqual(
+            result,
+            ' title="An &quot;example&quot; title" class="special class"',
+        )
 
 
 if __name__ == "__main__":
