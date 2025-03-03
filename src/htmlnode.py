@@ -1,3 +1,6 @@
+import html
+
+
 class HTMLNode:
 
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -17,4 +20,4 @@ class HTMLNode:
     def props_to_html(self):
         if self.props is None:
             return ""
-        return "".join(f' {k}="{v}"' for k, v in self.props.items())
+        return "".join(f' {k}="{html.escape(str(v))}"' for k, v in self.props.items())
