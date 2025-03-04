@@ -12,4 +12,4 @@ if [[ ! -f "$SCRIPT_PATH" ]]; then
     exit 1
 fi
 
-python3 "$SCRIPT_PATH"
+PYTHONPATH=$(pwd) python3 "$SCRIPT_PATH"

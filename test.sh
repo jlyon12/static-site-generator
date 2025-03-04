@@ -10,5 +10,10 @@ if [[ ! -d src ]]; then
     exit 1
 fi
 
-# Run the tests
-python3 -m unittest discover -s src
+if command -v pytest &>/dev/null; then
+    echo "Running tests with pytest..."
+    pytest tests
+else
+    echo "pytest not found, falling back to unittest..."
+    python3 -m unittest discover -s tests
+fi
