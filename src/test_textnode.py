@@ -12,22 +12,20 @@ class TestTextNode(unittest.TestCase):
 
     # Test equality with different text types
     def test_eq_different_text_type(self):
-        node = TextNode("This is a text node", TextType.NORMAL)
+        node = TextNode("This is a text node", TextType.TEXT)
         node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertNotEqual(node, node2)
 
     # Test equality with a different URL
     def test_eq_no_url(self):
-        node = TextNode("This is a text node", TextType.NORMAL)
-        node2 = TextNode(
-            "This is a text node", TextType.NORMAL, "https://archlinux.org"
-        )
+        node = TextNode("This is a text node", TextType.TEXT)
+        node2 = TextNode("This is a text node", TextType.TEXT, "https://archlinux.org")
         self.assertNotEqual(node, node2)
 
     # Test inequality when the URL differs
     def test_eq_different_url(self):
-        node = TextNode("This is a text node", TextType.NORMAL, "https://url1.com")
-        node2 = TextNode("This is a text node", TextType.NORMAL, "https://url2.com")
+        node = TextNode("This is a text node", TextType.TEXT, "https://url1.com")
+        node2 = TextNode("This is a text node", TextType.TEXT, "https://url2.com")
         self.assertNotEqual(node, node2)
 
     # Test a TextNode with no URL (URL should default to None)
@@ -58,7 +56,7 @@ class TestTextNode(unittest.TestCase):
 
     # Test to ensure that an empty string as text is allowed
     def test_empty_text(self):
-        node = TextNode("", TextType.NORMAL)
+        node = TextNode("", TextType.TEXT)
         self.assertEqual(node.text, "")
 
     # Test that the `text_type` is correctly handled
