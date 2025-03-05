@@ -1,3 +1,4 @@
+import re
 from src.textnode import TextType, TextNode
 from src.leafnode import LeafNode
 
@@ -44,3 +45,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                     else:
                         new_nodes.append(TextNode(segment, text_type))
     return new_nodes
+
+
+def extract_markdown_images(text):
+    alt_url_pairs = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return alt_url_pairs

@@ -1,6 +1,10 @@
 import unittest
 from src.textnode import TextNode, TextType
-from src.node_utils import text_node_to_html_node, split_nodes_delimiter
+from src.utils import (
+    text_node_to_html_node,
+    split_nodes_delimiter,
+    extract_markdown_images,
+)
 
 
 class TestTextToHtmlNode(unittest.TestCase):
@@ -217,6 +221,59 @@ class TestSplitDelimiter(unittest.TestCase):
         self.assertEqual(
             split_nodes_delimiter(old_nodes, "**", TextType.BOLD), expected
         )
+
+
+class TestExtractMarkdownImages(unittest.TestCase):
+    # Test case with a single markdown image
+    def test_single_image(self):
+        text = "![Alt text](https://example.com/image.jpg)"
+        expected = [("Alt text", "https://example.com/image.jpg")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with multiple markdown images
+    def test_multiple_images(self):
+        text = "![First](https://example.com/1.jpg) and ![Second](https://example.com/2.png)"
+        expected = [
+            ("First", "https://example.com/1.jpg"),
+            ("Second", "https://example.com/2.png"),
+        ]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with no markdown images in the text
+    def test_no_images(self):
+        text = "This is just a normal text without any images."
+        expected = []
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with mixed content: some text and one markdown image
+    def test_mixed_content(self):
+        text = "Some text ![Valid](https://example.com/image.jpg) and some more text."
+        expected = [("Valid", "https://example.com/image.jpg")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with markdown image containing special characters in the alt text
+    def test_images_with_special_characters(self):
+        text = "![Alt (with) special](https://example.com/image.jpg)"
+        expected = [("Alt (with) special", "https://example.com/image.jpg")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with markdown image containing spaces in the alt text or URL
+    def test_images_with_spaces(self):
+        text = "![Space Alt](https://example.com/my image.jpg)"
+        expected = [("Space Alt", "https://example.com/my image.jpg")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with markdown image URL containing query parameters
+    def test_images_with_query_params(self):
+        text = "![Query](https://example.com/image.jpg?width=100&height=200)"
+        expected = [("Query", "https://example.com/image.jpg?width=100&height=200")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
+    # Test case with markdown image containing escaped characters in the alt text
+    def test_images_with_escaped_characters(self):
+        text = r"![Escaped \[bracket\]](https://example.com/escaped.jpg)"
+        expected = [("Escaped \\[bracket\\]", "https://example.com/escaped.jpg")]
+        self.assertEqual(extract_markdown_images(text), expected)
 
 
 if __name__ == "__main__":
