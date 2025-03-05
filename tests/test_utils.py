@@ -4,6 +4,7 @@ from src.utils import (
     text_node_to_html_node,
     split_nodes_delimiter,
     extract_markdown_images,
+    extract_markdown_links,
 )
 
 
@@ -274,6 +275,60 @@ class TestExtractMarkdownImages(unittest.TestCase):
         text = r"![Escaped \[bracket\]](https://example.com/escaped.jpg)"
         expected = [("Escaped \\[bracket\\]", "https://example.com/escaped.jpg")]
         self.assertEqual(extract_markdown_images(text), expected)
+
+
+class TestExtractMarkdownLinks(unittest.TestCase):
+
+    # Test basic link extraction [anchor](url)
+    def test_basic_link_extraction(self):
+        text = "This is a [link](https://example.com)."
+        expected = [("link", "https://example.com")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test multiple links extraction [anchor1](url1) and [anchor2](url2)
+    def test_multiple_links_extraction(self):
+        text = "Here is a [first link](https://example1.com) and a [second link](https://example2.com)."
+        expected = [
+            ("first link", "https://example1.com"),
+            ("second link", "https://example2.com"),
+        ]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test input with no links to ensure empty list is returned
+    def test_no_links(self):
+        text = "This text has no links."
+        expected = []
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test mixed text and links to ensure only links are extracted
+    def test_mixed_text_and_links(self):
+        text = "Some text and a [link](https://example.com) and more text."
+        expected = [("link", "https://example.com")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test links with special characters in the anchor text
+    def test_links_with_special_characters_in_anchor(self):
+        text = "This is a [link with (special)](https://example.com)."
+        expected = [("link with (special)", "https://example.com")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test links with spaces in the URL
+    def test_links_with_spaces_in_url(self):
+        text = "This is a [link with spaces](https://example.com/my page)."
+        expected = [("link with spaces", "https://example.com/my page")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test links with query parameters in the URL
+    def test_links_with_query_params_in_url(self):
+        text = "This is a [query link](https://example.com/search?q=test)."
+        expected = [("query link", "https://example.com/search?q=test")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    # Test links with escaped characters in the anchor text
+    def test_links_with_escaped_characters_in_anchor(self):
+        text = r"This is a [escaped \[bracket\]](https://example.com/escaped)."
+        expected = [("escaped \\[bracket\\]", "https://example.com/escaped")]
+        self.assertEqual(extract_markdown_links(text), expected)
 
 
 if __name__ == "__main__":

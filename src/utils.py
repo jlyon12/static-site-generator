@@ -50,3 +50,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 def extract_markdown_images(text):
     alt_url_pairs = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
     return alt_url_pairs
+
+
+def extract_markdown_links(text):
+    link_url_pairs = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return link_url_pairs
