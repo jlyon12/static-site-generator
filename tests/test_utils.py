@@ -7,6 +7,7 @@ from src.utils import (
     extract_markdown_links,
     split_nodes_link,
     split_nodes_image,
+    text_to_textnodes,
 )
 
 
@@ -537,6 +538,76 @@ class TestSplitNodesImage(unittest.TestCase):
         old_nodes = [TextNode("", TextType.TEXT)]
         new_nodes = split_nodes_image(old_nodes)
         self.assertEqual(new_nodes, old_nodes)
+
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_basic_text(self):
+        text = "Just some plain text."
+        expected = [TextNode("Just some plain text.", TextType.TEXT)]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_bold_text(self):
+        text = "This is **bold** text."
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" text.", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_italic_text(self):
+        text = "This is _italic_ text."
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" text.", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_code_block(self):
+        text = "Inline `code` example."
+        expected = [
+            TextNode("Inline ", TextType.TEXT),
+            TextNode("code", TextType.CODE),
+            TextNode(" example.", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_image(self):
+        text = "An ![image](https://example.com/image.jpg) here."
+        expected = [
+            TextNode("An ", TextType.TEXT),
+            TextNode("image", TextType.IMAGE, "https://example.com/image.jpg"),
+            TextNode(" here.", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_link(self):
+        text = "Visit [Boot.dev](https://boot.dev) for learning."
+        expected = [
+            TextNode("Visit ", TextType.TEXT),
+            TextNode("Boot.dev", TextType.LINK, "https://boot.dev"),
+            TextNode(" for learning.", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_complex_text(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
 
 
 if __name__ == "__main__":
