@@ -47,6 +47,47 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     return new_nodes
 
 
+def split_nodes_by_type(old_nodes, extract_func, text_wrapper, text_type):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        elements = extract_func(node.text)
+        if len(elements) == 0:
+            new_nodes.append(node)
+            continue
+        current_text = node.text
+        for elem_text, url in elements:
+            parts = current_text.split(text_wrapper.format(elem_text, url), 1)
+
+            if parts[0]:
+                new_nodes.append(TextNode(parts[0], TextType.TEXT))
+            new_nodes.append(TextNode(elem_text, text_type, url))
+
+            if len(parts) > 1:
+                current_text = parts[1]
+            else:
+                current_text = ""
+        if current_text:
+            new_nodes.append(TextNode(current_text, TextType.TEXT))
+
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    return split_nodes_by_type(
+        old_nodes, extract_markdown_links, "[{}]({})", TextType.LINK
+    )
+
+
+def split_nodes_image(old_nodes):
+    return split_nodes_by_type(
+        old_nodes, extract_markdown_images, "![{}]({})", TextType.IMAGE
+    )
+
+
 def extract_markdown_images(text):
     alt_url_pairs = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
     return alt_url_pairs
