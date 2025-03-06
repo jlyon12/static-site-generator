@@ -1,6 +1,16 @@
 import re
+from enum import Enum
 from src.textnode import TextType, TextNode
 from src.leafnode import LeafNode
+
+
+class BlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
 
 
 def text_node_to_html_node(text_node):
@@ -120,3 +130,19 @@ def markdown_to_blocks(markdown):
         block = block.strip()
         filtered_blocks.append(block)
     return filtered_blocks
+
+
+def block_to_block_type(block):
+    if not block:
+        return BlockType.PARAGRAPH
+    elif block.startswith("```") and block.endswith("```"):
+        return BlockType.CODE
+    elif block.startswith(">"):
+        return BlockType.QUOTE
+    elif block.startswith("- "):
+        return BlockType.UNORDERED_LIST
+    elif block[0].isdigit() and block[1] == "." and block[2] == " ":
+        return BlockType.ORDERED_LIST
+    elif block.startswith("#"):
+        return BlockType.HEADING
+    return BlockType.PARAGRAPH

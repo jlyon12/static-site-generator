@@ -10,6 +10,8 @@ from src.utils import (
     split_nodes_link,
     text_node_to_html_node,
     text_to_textnodes,
+    block_to_block_type,
+    BlockType,
 )
 
 
@@ -654,6 +656,61 @@ This is the same paragraph on a new line
                 "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
                 "- This is a list\n- with items",
             ],
+        )
+
+
+class TestBlockType(unittest.TestCase):
+
+    # Test for heading blocks (1-6 '#')
+    def test_heading(self):
+        self.assertEqual(block_to_block_type("# Heading 1"), BlockType.HEADING)
+        self.assertEqual(block_to_block_type("### Heading 3"), BlockType.HEADING)
+        self.assertEqual(block_to_block_type("###### Heading 6"), BlockType.HEADING)
+
+    # Test for code blocks (3 backticks at the start and end)
+    def test_code(self):
+        self.assertEqual(block_to_block_type("```\nCode block\n```"), BlockType.CODE)
+
+    # Test for quote blocks (">" at the start of each line)
+    def test_quote(self):
+        self.assertEqual(block_to_block_type("> This is a quote"), BlockType.QUOTE)
+        self.assertEqual(
+            block_to_block_type("> This is a quote\n> Second line"), BlockType.QUOTE
+        )
+
+    # Test for unordered list blocks (starts with "- ")
+    def test_unordered_list(self):
+        self.assertEqual(block_to_block_type("- Item 1"), BlockType.UNORDERED_LIST)
+        self.assertEqual(
+            block_to_block_type("- Item 2\n- Item 3"), BlockType.UNORDERED_LIST
+        )
+
+    # Test for ordered list blocks (starts with "1. ")
+    def test_ordered_list(self):
+        self.assertEqual(block_to_block_type("1. Item 1"), BlockType.ORDERED_LIST)
+        self.assertEqual(
+            block_to_block_type("2. Item 2\n3. Item 3"), BlockType.ORDERED_LIST
+        )
+
+    # Test for paragraph blocks (no specific marker)
+    def test_paragraph(self):
+        self.assertEqual(
+            block_to_block_type("This is a normal paragraph."), BlockType.PARAGRAPH
+        )
+        self.assertEqual(block_to_block_type("Another paragraph."), BlockType.PARAGRAPH)
+        self.assertEqual(
+            block_to_block_type("Random text with no special symbols."),
+            BlockType.PARAGRAPH,
+        )
+
+    # Edge case: empty block (should default to paragraph)
+    def test_empty_block(self):
+        self.assertEqual(block_to_block_type(""), BlockType.PARAGRAPH)
+
+    # Edge case: heading with extra spaces
+    def test_heading_with_spaces(self):
+        self.assertEqual(
+            block_to_block_type("###   Heading with extra spaces   "), BlockType.HEADING
         )
 
 
