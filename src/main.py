@@ -1,9 +1,19 @@
-from src.textnode import TextNode, TextType
+import os
+import shutil
+from src.copy_static import copy_files_recursive
+
+static_dir = "./static/"
+public_dir = "./public/"
 
 
 def main():
-    test = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(test)
+    print("Checking for static files...")
+    if not os.path.exists(static_dir):
+        raise Exception('"Static" directory not found in project root')
+    print("Deleting public directory...")
+    if os.path.exists(public_dir):
+        shutil.rmtree(public_dir)
+    copy_files_recursive(static_dir, public_dir)
 
 
 main()
