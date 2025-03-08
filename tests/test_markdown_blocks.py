@@ -51,7 +51,7 @@ class TestTextToHtmlNode(unittest.TestCase):
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(
             html_node.to_html(),
-            '<img src="http://archlinux.org/logo.png" alt="Arch Linux Logo"></img>',
+            '<img src="http://archlinux.org/logo.png" alt="Arch Linux Logo" />',
         )
 
     # Test handling of an invalid text type
