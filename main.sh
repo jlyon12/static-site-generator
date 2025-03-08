@@ -13,3 +13,4 @@ if [[ ! -f "$SCRIPT_PATH" ]]; then
 fi
 
 PYTHONPATH=$(pwd) python3 "$SCRIPT_PATH"
+cd public && python3 -m http.server 8888
